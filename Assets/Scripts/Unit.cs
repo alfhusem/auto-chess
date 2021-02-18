@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Unit
+public class Unit : MonoBehaviour
 {
     public enum Alliance
     {
@@ -15,7 +15,9 @@ public class Unit
     private Vector2Int pos;
     private Alliance alliance;
     private Texture2D texture; // = Resources.Load<Texture2D>("Sprites/hex-sliced_113");
-    private GameObject gameObject;
+    private GameObject unitPrefab;
+    private int health = 100;
+    private int attack = 40;
 
     public Unit(Vector2Int pos, int alliance = (int)Alliance.none)
     {
@@ -35,6 +37,7 @@ public class Unit
         this.alliance = (Alliance)alliance;
     }
 
+    // Getters
     public Vector2Int getPos()
     {
         return this.pos;
@@ -47,9 +50,20 @@ public class Unit
 
     public GameObject getGameObject()
     {
-        return this.gameObject;
+        return this.unitPrefab;
     }
 
+    public int getHealth()
+    {
+        return this.health;
+    }
+
+    public int getAttack()
+    {
+        return this.attack;
+    }
+
+    // Setters
     public void setPos(Vector2Int pos)
     {
         this.pos = pos;
@@ -57,7 +71,12 @@ public class Unit
 
     public void setGameObject(GameObject go)
     {
-        this.gameObject = go;
+        this.unitPrefab = go;
+    }
+
+    public void setHealth(int health)
+    {
+        this.health = health;
     }
 
 }

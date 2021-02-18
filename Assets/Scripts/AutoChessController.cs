@@ -25,7 +25,8 @@ public class AutoChessController : MonoBehaviour
 
     List<int> passableValues;
     public static List<Unit> allUnits;
-    GameObject allMapTiles;     //the map and tiles
+    public GameObject allMapTiles;     //the map and tiles
+    public GameObject unitPrefab;
 
     private int turn = 0;
     private int team = 0;
@@ -70,7 +71,9 @@ public class AutoChessController : MonoBehaviour
 
     public void createUnit(Unit unit)
     {
+        //GameObject unitGO = Instantiate(unitPrefab) as GameObject;
         GameObject unitGO = new GameObject("unit" + allUnits.Count);
+
         unitGO.AddComponent<SpriteRenderer>();
         unitGO.GetComponent<SpriteRenderer>().sprite = tilePrefab; //TODO get sprite
         unitGO.GetComponent<SpriteRenderer>().sortingOrder = 2;
@@ -171,12 +174,24 @@ public class AutoChessController : MonoBehaviour
 
         }
 
-        if (GUI.Button(new Rect(10, 90, 150, 30), "See coordinates"))
+        if (GUI.Button(new Rect(10, 90, 150, 30), "Attack"))
+        {
+            foreach (Unit unit in allUnits)
+            {
+                Unit enemy = allUnits.Where(x => x.getAlliance() != unit.getAlliance()).First();
+                attack(unit, enemy);
+
+            }
+
+        }
+
+        /*if (GUI.Button(new Rect(10, 130, 150, 30), "See coordinates"))
         {
             foreach (var key in map.Keys) {
                 GUI.Label(new Rect(key.x, key.y, 150, 30), "hmm");
             }
         }
+        */
 
         GUI.Label(new Rect(180, 20, 300, 30), message);
 
@@ -294,6 +309,26 @@ public class AutoChessController : MonoBehaviour
             }
         }
         return mapDict;
+    }
+
+    void attack(Unit active, Unit target)
+    {
+        string a = active.getAlliance() + "[" + active.getHealth() + "]:" + active.getPos();
+        string b = target.getAlliance() + "[" + active.getHealth() + "]:" + target.getPos();
+        Debug.Log(a + " attacked " + b + " for " + target.getAttack() + " dmg");
+        target.setHealth(target.getHealth() - active.getAttack());
+
+        a = active.getAlliance() + "[" + active.getHealth() + "]:" + active.getPos();
+        b = target.getAlliance() + "[" + active.getHealth() + "]:" + target.getPos();
+        if (target.getHealth() > 0 )
+        {
+            Debug.Log("> " + b);
+        }
+        else
+        {
+            Debug.Log("> " + b + " died");
+            allUnits.Remove(target);
+        }
     }
 
 

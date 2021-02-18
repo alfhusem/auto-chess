@@ -5,13 +5,14 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour
 {
-    public int width = 15;
-    public int height = 12;
+    public int width = 6;
+    public int height = 6;
+		public int scale = 20;
 
     public HexCell cellPrefab;
-	public Text cellLabelPrefab;
+		public Text cellLabelPrefab;
 
-	Canvas gridCanvas;
+		Canvas gridCanvas;
     HexCell[] cells;
 
 
@@ -19,21 +20,26 @@ public class HexGrid : MonoBehaviour
     void Awake()
     {
         cells = new HexCell[height * width];
-		gridCanvas = GetComponentInChildren<Canvas>();
+				gridCanvas = GetComponentInChildren<Canvas>();
+				this.transform.localScale *= scale;
 
-        for (int y = 0, i = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				CreateCell(x, y, i++);
+        for (int y = -height/2, i = 0; y < height/2; y++)
+				{
+					for (int x = -width/2; x < width/2; x++)
+					{
+						CreateCell(x, y, i++);
+					}
+				}
 			}
-		}
-	}
 
-	void CreateCell (int x, int y, int i) {
+	void CreateCell (int x, int y, int i)
+	{
 		Vector2 position;
 		position.x = x * 10f;
 		position.y = y * 10f;
 
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
+		//cell.transform.localScale *= 10;
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
 
