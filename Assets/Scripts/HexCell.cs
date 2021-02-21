@@ -2,7 +2,7 @@
 
 public class HexCell : MonoBehaviour {
 
-	//public HexCoordinates coordinates;
+	public HexCoordinates coordinates;
 
 	public Color color;
 }
