@@ -34,15 +34,17 @@ public struct HexCoordinates {
 	}
 
 	public static HexCoordinates FromPosition (Vector3 position) {
-		Debug.Log("x "+position.x+" y "+position.y+" z "+position.z);
+
 		float x = position.x / (HexMetrics.innerRadius * 2f);
 		float y = -x;
-		float offset = position.z / (HexMetrics.outerRadius * 3f);
+		float offset = position.y / (HexMetrics.outerRadius * 3f);
 		x -= offset;
 		y -= offset;
+
 		int iX = Mathf.RoundToInt(x);
 		int iY = Mathf.RoundToInt(y);
 		int iZ = Mathf.RoundToInt(-x -y);
+		Debug.Log("x "+iX+" y "+ iY +" z "+ iZ);
 
 		if (iX + iY + iZ != 0) {
 			float dX = Mathf.Abs(x - iX);
@@ -67,5 +69,12 @@ public struct HexCoordinates {
 
 	public string ToStringOnSeparateLines () {
 		return X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
+	}
+
+	public int DistanceTo (HexCoordinates other) {
+		return
+			((x < other.x ? other.x - x : x - other.x) +
+			(Y < other.Y ? other.Y - Y : Y - other.Y) +
+			(z < other.z ? other.z - z : z - other.z)) / 2;
 	}
 }

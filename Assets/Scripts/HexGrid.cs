@@ -57,10 +57,30 @@ public class HexGrid : MonoBehaviour
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 		cell.color = defaultColor;
 
+		if (x > 0) {
+			cell.SetNeighbor(HexDirection.W, cells[i - 1]);
+		}
+		if (z > 0) {
+			if ((z & 1) == 0) {
+				cell.SetNeighbor(HexDirection.SE, cells[i - width]);
+				if (x > 0) {
+					cell.SetNeighbor(HexDirection.SW, cells[i - width - 1]);
+				}
+			}
+			else {
+				cell.SetNeighbor(HexDirection.SW, cells[i - width]);
+				if (x < width - 1) {
+					cell.SetNeighbor(HexDirection.SE, cells[i - width + 1]);
+				}
+			}
+		}
+
 		Text label = Instantiate<Text>(cellLabelPrefab);
 		label.rectTransform.SetParent(gridCanvas.transform, false);
 		label.rectTransform.anchoredPosition = new Vector3(position.x, position.z);
-		label.text = cell.coordinates.ToStringOnSeparateLines();
+		//label.text = cell.coordinates.ToStringOnSeparateLines();
+
+		cell.uiRect = label.rectTransform;
   }
 
 	void Update () {
@@ -73,21 +93,56 @@ public class HexGrid : MonoBehaviour
 		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 		if (Physics.Raycast(inputRay, out hit)) {
-			Debug.Log("hit " + hit.point);
 			TouchCell(hit.point);
 		}
 	}
 
 	void TouchCell (Vector3 position) {
 		position = transform.InverseTransformPoint(position); // * scale
-		Debug.Log("new pos " + position);
 		HexCoordinates coordinates = HexCoordinates.FromPosition(position);
 		int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
 		HexCell cell = cells[index];
 		cell.color = touchedColor;
 		hexMesh.Triangulate(cells);
 
-		Debug.Log("touched at " + coordinates.ToString());
+		cell.obstacle = true;
+		FindDistancesTo(cell);
+
+		//Debug.Log("touched at " + coordinates.ToString());
+	}
+
+	public void FindDistancesTo (HexCell cell) {
+		StopAllCoroutines();
+		StartCoroutine(Search(cell));
+
+		//TODO StopAllCoroutines when loading map
+
+	}
+
+	IEnumerator Search (HexCell cell) {
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].Distance = int.MaxValue;
+		}
+		WaitForSeconds delay = new WaitForSeconds(1 / 60f);
+		Queue<HexCell> frontier = new Queue<HexCell>();
+		cell.Distance = 0;
+		frontier.Enqueue(cell);
+		while (frontier.Count > 0) {
+			yield return delay;
+			HexCell current = frontier.Dequeue();
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+				HexCell neighbor = current.GetNeighbor(d);
+				if (neighbor == null || neighbor.Distance != int.MaxValue) {
+					continue;
+				}
+				if (neighbor.obstacle) {
+					// TODO more spesific
+					continue;
+				}
+				neighbor.Distance = current.Distance + 1;
+				frontier.Enqueue(neighbor);
+			}
+		}
 	}
 
 
