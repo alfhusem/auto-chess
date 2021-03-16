@@ -8,6 +8,10 @@ public class HexCell : MonoBehaviour {
 	public RectTransform uiRect;
 	public bool obstacle;
 
+	public HexCell PathFrom { get; set; }
+
+	//TODO previousCell usage
+	HexCell previousCell, searchFromCell;
 	int distance;
 
 	[SerializeField]

@@ -16,9 +16,7 @@ public class HexGrid : MonoBehaviour
     HexCell[] cells;
 		HexMesh hexMesh;
 
-		public Color defaultColor = Color.white;
-		public Color touchedColor = Color.magenta;
-
+		public Color defaultColor = Color.green;
 
     void Awake()
     {
@@ -83,6 +81,9 @@ public class HexGrid : MonoBehaviour
 		cell.uiRect = label.rectTransform;
   }
 
+
+	//Temp
+	/*
 	void Update () {
 		if (Input.GetMouseButton(0)) {
 			HandleInput();
@@ -93,56 +94,86 @@ public class HexGrid : MonoBehaviour
 		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 		if (Physics.Raycast(inputRay, out hit)) {
-			TouchCell(hit.point);
+			ColorCell(hit.point, Color.magenta);
 		}
 	}
+	*/
 
-	void TouchCell (Vector3 position) {
+
+	public HexCell GetCell (Vector3 position) {
 		position = transform.InverseTransformPoint(position); // * scale
 		HexCoordinates coordinates = HexCoordinates.FromPosition(position);
 		int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
-		HexCell cell = cells[index];
-		cell.color = touchedColor;
-		hexMesh.Triangulate(cells);
 
-		cell.obstacle = true;
-		FindDistancesTo(cell);
+		//cell.obstacle = true;
+		//FindDistancesTo(cell);
 
-		//Debug.Log("touched at " + coordinates.ToString());
+		return cells[index];
 	}
 
-	public void FindDistancesTo (HexCell cell) {
+	public void FindPath (HexCell fromCell, HexCell toCell) {
 		StopAllCoroutines();
-		StartCoroutine(Search(cell));
+		StartCoroutine(Search(fromCell, toCell));
 
 		//TODO StopAllCoroutines when loading map
 
 	}
 
-	IEnumerator Search (HexCell cell) {
+	IEnumerator Search (HexCell fromCell, HexCell toCell) {
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].Distance = int.MaxValue;
+			cells[i].DisableHighlight();
 		}
+		fromCell.EnableHighlight(Color.blue);
+		toCell.EnableHighlight(Color.red);
+
 		WaitForSeconds delay = new WaitForSeconds(1 / 60f);
-		Queue<HexCell> frontier = new Queue<HexCell>();
-		cell.Distance = 0;
-		frontier.Enqueue(cell);
+		List<HexCell> frontier = new List<HexCell>();
+		fromCell.Distance = 0;
+		frontier.Add(fromCell);
 		while (frontier.Count > 0) {
 			yield return delay;
-			HexCell current = frontier.Dequeue();
+			HexCell current = frontier[0];
+			frontier.RemoveAt(0);
+
+			if (current == toCell) {
+				current = current.PathFrom;
+				while (current != fromCell) {
+					current.EnableHighlight(Color.black);
+					current = current.PathFrom;
+				}
+				break;
+			}
+
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor(d);
-				if (neighbor == null || neighbor.Distance != int.MaxValue) {
+				if (neighbor == null) {
 					continue;
 				}
 				if (neighbor.obstacle) {
 					// TODO more spesific
 					continue;
 				}
-				neighbor.Distance = current.Distance + 1;
-				frontier.Enqueue(neighbor);
+				int distance = current.Distance + 1;
+
+				if (neighbor.Distance == int.MaxValue) {
+					neighbor.Distance = distance;
+					neighbor.PathFrom = current;
+					frontier.Add(neighbor);
+				}
+				else if (distance < neighbor.Distance) {
+					neighbor.Distance = distance;
+					neighbor.PathFrom = current;
+				}
+
+				frontier.Sort((x, y) => x.Distance.CompareTo(y.Distance));
+
 			}
 		}
+	}
+
+	public void Refresh () {
+		hexMesh.Triangulate(cells);
 	}
 
 
