@@ -8,13 +8,19 @@ public class HexGrid : MonoBehaviour
     public int width = 6;
     public int height = 6;
 		public int scale = 15;
+		int searchFrontierPhase;
 
     public HexCell cellPrefab;
 		public Text cellLabelPrefab;
 
+		HexCell currentPathFrom, currentPathTo;
+		bool currentPathExists;
+
 		Canvas gridCanvas;
     HexCell[] cells;
 		HexMesh hexMesh;
+		HexCellPriorityQueue searchFrontier;
+
 
 		public Color defaultColor = Color.green;
 
@@ -100,6 +106,8 @@ public class HexGrid : MonoBehaviour
 	*/
 
 
+
+
 	public HexCell GetCell (Vector3 position) {
 		position = transform.InverseTransformPoint(position); // * scale
 		HexCoordinates coordinates = HexCoordinates.FromPosition(position);
@@ -111,65 +119,111 @@ public class HexGrid : MonoBehaviour
 		return cells[index];
 	}
 
-	public void FindPath (HexCell fromCell, HexCell toCell) {
-		StopAllCoroutines();
-		StartCoroutine(Search(fromCell, toCell));
-
-		//TODO StopAllCoroutines when loading map
+	public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
+		ClearPath();
+		currentPathFrom = fromCell;
+		currentPathTo = toCell;
+		currentPathExists = Search(fromCell, toCell, speed);
+		ShowPath(speed);
 
 	}
 
-	IEnumerator Search (HexCell fromCell, HexCell toCell) {
-		for (int i = 0; i < cells.Length; i++) {
-			cells[i].Distance = int.MaxValue;
-			cells[i].DisableHighlight();
-		}
-		fromCell.EnableHighlight(Color.blue);
-		toCell.EnableHighlight(Color.red);
+	bool Search (HexCell fromCell, HexCell toCell, int speed) {
+		searchFrontierPhase += 2;
 
-		WaitForSeconds delay = new WaitForSeconds(1 / 60f);
-		List<HexCell> frontier = new List<HexCell>();
+		if (searchFrontier == null) {
+			searchFrontier = new HexCellPriorityQueue();
+		}
+		else {
+			searchFrontier.Clear();
+		}
+
+		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
-		frontier.Add(fromCell);
-		while (frontier.Count > 0) {
-			yield return delay;
-			HexCell current = frontier[0];
-			frontier.RemoveAt(0);
+		searchFrontier.Enqueue(fromCell);
+		while (searchFrontier.Count > 0) {
+			HexCell current = searchFrontier.Dequeue();
+			current.SearchPhase += 1;
 
 			if (current == toCell) {
-				current = current.PathFrom;
-				while (current != fromCell) {
-					current.EnableHighlight(Color.black);
-					current = current.PathFrom;
-				}
-				break;
+				return true;
 			}
+
+			int currentTurn = current.Distance / speed;
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor(d);
-				if (neighbor == null) {
-					continue;
+				if (
+					neighbor == null ||
+					neighbor.SearchPhase > searchFrontierPhase
+				) {
+						continue;
 				}
 				if (neighbor.obstacle) {
 					// TODO more spesific
 					continue;
 				}
-				int distance = current.Distance + 1;
+				int moveCost = 1;
+				//TODO different movecost per terrain
 
-				if (neighbor.Distance == int.MaxValue) {
+				int distance = current.Distance + moveCost;
+				int turn = distance / speed;
+				if (turn > currentTurn) {
+					distance = turn * speed + moveCost;
+				}
+
+				if (neighbor.SearchPhase < searchFrontierPhase) {
+					neighbor.SearchPhase = searchFrontierPhase;
 					neighbor.Distance = distance;
 					neighbor.PathFrom = current;
-					frontier.Add(neighbor);
+					neighbor.SearchHeuristic =
+							neighbor.coordinates.DistanceTo(toCell.coordinates);
+					searchFrontier.Enqueue(neighbor);
 				}
 				else if (distance < neighbor.Distance) {
+					int oldPriority = neighbor.SearchPriority;
 					neighbor.Distance = distance;
 					neighbor.PathFrom = current;
-				}
+					searchFrontier.Change(neighbor, oldPriority);
 
-				frontier.Sort((x, y) => x.Distance.CompareTo(y.Distance));
+				}
 
 			}
 		}
+		return false;
+	}
+
+	void ShowPath (int speed) {
+		if (currentPathExists) {
+			HexCell current = currentPathTo;
+			while (current != currentPathFrom) {
+				int turn = current.Distance / speed;
+				current.SetLabel(turn.ToString());
+				current.EnableHighlight(Color.white);
+				current = current.PathFrom;
+			}
+		}
+		currentPathFrom.EnableHighlight(Color.blue);
+		currentPathTo.EnableHighlight(Color.red);
+	}
+
+	void ClearPath () {
+		//TODO clear path when creating or loading map
+		if (currentPathExists) {
+			HexCell current = currentPathTo;
+			while (current != currentPathFrom) {
+				current.SetLabel(null);
+				current.DisableHighlight();
+				current = current.PathFrom;
+			}
+			current.DisableHighlight();
+			currentPathExists = false;
+		}
+		else if (currentPathFrom) {
+			currentPathFrom.DisableHighlight();
+			currentPathTo.DisableHighlight();
+		}
+		currentPathFrom = currentPathTo = null;
 	}
 
 	public void Refresh () {

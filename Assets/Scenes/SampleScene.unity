@@ -190,7 +190,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: White
+  m_Text: Edit Mode
 --- !u!222 &20820558
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -485,7 +485,6 @@ MonoBehaviour:
     z: 0
   color: {r: 1, g: 1, b: 1, a: 0}
   uiRect: {fileID: 0}
-  obstacle: 0
   neighbors:
   - {fileID: 0}
   - {fileID: 0}
@@ -1780,8 +1779,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 755492221}
-        m_MethodName: SelectColor
-        m_Mode: 3
+        m_MethodName: SetEditMode
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
