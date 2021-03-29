@@ -12,6 +12,7 @@ public class HexCell : MonoBehaviour {
 	public HexCell PathFrom { get; set; }
 	public HexCell NextWithSamePriority { get; set; }
 	public int SearchPhase { get; set; }
+	public HexUnit Unit { get; set; }
 
 
 	//TODO previousCell usage
@@ -30,6 +31,12 @@ public class HexCell : MonoBehaviour {
 			//UpdateDistanceLabel();
 		}
 	}
+
+	public Vector3 Position {
+        get {
+            return transform.localPosition;
+        }
+    }
 
 	public int SearchPriority {
 		get {
@@ -65,5 +72,6 @@ public class HexCell : MonoBehaviour {
 		highlight.color = color;
 		highlight.enabled = true;
 	}
+
 
 }
