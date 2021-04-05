@@ -15,7 +15,7 @@ public class HexGrid : MonoBehaviour
     public HexCell cellPrefab;
 		public Text cellLabelPrefab;
 
-		HexCell currentPathFrom, currentPathTo;
+		public HexCell currentPathFrom, currentPathTo;
 		bool currentPathExists;
 
 		Canvas gridCanvas;
@@ -150,7 +150,7 @@ public class HexGrid : MonoBehaviour
 				) {
 						continue;
 				}
-				if (neighbor.obstacle || neighbor.Unit) {
+				if ( neighbor.obstacle ){ //|| neighbor.Unit) {
 					// TODO more spesific
 					continue;
 				}
@@ -182,6 +182,19 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 		return false;
+	}
+
+	public List<HexCell> GetPath () {
+		if (!currentPathExists) {
+			return null;
+		}
+		List<HexCell> path = ListPool<HexCell>.Get();
+		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom) {
+			path.Add(c);
+		}
+		path.Add(currentPathFrom);
+		path.Reverse();
+		return path;
 	}
 
 	void ShowPath (int speed) {

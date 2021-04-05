@@ -14,11 +14,12 @@ public class HexMapEditor : MonoBehaviour
 	public HexUnit unitPrefab;
 
 	HexCell previousCell;
+	bool enabled;
 
 	void Awake () {
 		SelectColor(0);
 		defaultColor = Color.white;
-		SetEditMode(false);
+		SetEditMode(true);
 	}
 
 	void Update () {
@@ -47,7 +48,9 @@ public class HexMapEditor : MonoBehaviour
 			//TODO editCells chunks
 			previousCell = currentCell;
 
-			//EditCell(currentCell); //TODO EditCells
+			if (enabled) {
+				EditCell(currentCell); //TODO EditCells
+			}
 
 		}
 		else {
