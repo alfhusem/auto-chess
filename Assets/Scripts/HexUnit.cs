@@ -9,6 +9,7 @@ public class HexUnit : MonoBehaviour
 	List<HexCell> pathToTravel;
 
 	int offset = 3; // position in cell
+	bool isDead;
 
 	public HexUnit target { get; set; }
 
@@ -17,6 +18,7 @@ public class HexUnit : MonoBehaviour
 	public int health;
 	public int attackDamage;
 	public int attackRange;
+	public Animator animator;
 
   public HexCell Location {
 		get {
@@ -30,6 +32,12 @@ public class HexUnit : MonoBehaviour
 			value.Unit = this;
 			transform.localPosition =
 				new Vector3(value.Position.x, value.Position.z - offset, 0);
+		}
+	}
+
+	public bool IsDead {
+		get {
+			return isDead;
 		}
 	}
 
@@ -60,12 +68,21 @@ public class HexUnit : MonoBehaviour
 	}
 
 	public void Die () {
-		location.Unit = null;
-		Destroy(gameObject);
+		if (!isDead) {
+			isDead = true;
+			location.Unit = null;
+			Destroy(gameObject);
+			Location.SetLabel(null);
+			Location.DisableHighlight();
+		}
 	}
 
 	public bool IsValidDestination (HexCell cell) {
 		return !cell.obstacle; //&& !cell.Unit;
+	}
+
+	public int DistanceToUnit(HexUnit targetUnit) {
+		return this.Location.coordinates.DistanceTo(targetUnit.Location.coordinates);
 	}
 
 

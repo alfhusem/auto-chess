@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections;
+using System.Collections.Generic;
 
 public class HexGameUI : MonoBehaviour {
 
 	public HexGrid grid;
 	public int fixedSpeed;
-	public int selectedFaction; //moved
 
 	HexCell currentCell;
 	HexUnit selectedUnit;
@@ -17,20 +18,23 @@ public class HexGameUI : MonoBehaviour {
 		grid.ClearPath();
 	}
 
-	public void SetFaction (int faction) {
-		enabled = faction == 0;
-		selectedFaction = faction;
-	}
-
 	void Awake () {
 		fixedSpeed = 2;
 	}
 
 	void Update () {
+		foreach (HexUnit unit in grid.GetUnits()) {
+			if (unit.IsDead) {
+				grid.RemoveUnit(unit);
+			}
+		}
+
+
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if (Input.GetMouseButtonDown(0)) {
 				DoSelection();
 			}
+			/*
 			else if (selectedUnit && !selectedUnit.target) {
 				if (Input.GetMouseButtonDown(1)) {
 					//DoMove();
@@ -48,12 +52,29 @@ public class HexGameUI : MonoBehaviour {
 				}
 
 			}
+		*/
 		}
 		if (Input.GetKeyDown(KeyCode.Space)) {
-			DoTurn();
-			Debug.Log(grid.getUnits(0)[0]);
-			Debug.Log(grid.getUnits(1)[0]);
+			HexUnit human = grid.GetUnits(0)[0];
+			HexUnit demon = grid.GetUnits(1)[0];
 
+			int closestUnitDistance = 1000;
+			foreach (HexUnit target in grid.GetUnits(1)) {
+				if (human.DistanceToUnit(target) < closestUnitDistance) {
+					closestUnitDistance = human.DistanceToUnit(target);
+					human.target = target;
+				}
+			}
+
+		  closestUnitDistance = 1000;
+			foreach (HexUnit target in grid.GetUnits(0)) {
+				if (demon.DistanceToUnit(target) < closestUnitDistance) {
+					closestUnitDistance = demon.DistanceToUnit(target);
+					demon.target = target;
+				}
+			}
+			StartCoroutine(DoTurn());
+			//DoTurn();
 		}
 	}
 
@@ -81,15 +102,16 @@ public class HexGameUI : MonoBehaviour {
 		}
 	}
 
-	void DoPathfinding () {
-		if (UpdateCurrentCell()) {
+	void DoPathfinding (HexUnit unit) {
+		/*if (UpdateCurrentCell()) {
 			if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
 				grid.FindPath(selectedUnit.Location, currentCell, fixedSpeed);
 			}
 			else {
 				grid.ClearPath();
 			}
-		}
+		}*/
+		grid.FindPath(unit.Location, unit.target.Location, fixedSpeed);
 	}
 	//Not used
 	void DoMove () {
@@ -98,52 +120,60 @@ public class HexGameUI : MonoBehaviour {
 			grid.ClearPath();
 		}
 	}
-	// Not used
-	void InitiateTravel() {
-		if (grid.HasPath) {
-			//selectedUnit.Travel(grid.GetPath());
-			selectedUnit.SetPath(grid.GetPath());
-		}
-	}
 
-	void DoTurn () {
-		if (selectedUnit.target) {
-			int distance =
-				selectedUnit.Location.coordinates.DistanceTo(selectedUnit.target.Location.coordinates);
-			if (distance > selectedUnit.attackRange){
-				DoStep();
+	IEnumerator DoTurn () {
+
+		WaitForSeconds delay = new WaitForSeconds(1f);
+		foreach (HexUnit unit in grid.GetUnits()) {
+			if (unit.target) {
+				DoPathfinding(unit);
+				if (unit.DistanceToUnit(unit.target) > unit.attackRange){
+					StopAllCoroutines();
+					DoStep(unit);
+				}
+				else {
+					StartCoroutine(Attack(unit));
+					//Attack(unit);
+					yield return delay;
+				}
 			}
-			else {
-				Attack();
-			}
-		}
-		else {
-			Debug.Log("He dead");
 		}
 	}
 
-	void DoStep () {
-		if (selectedUnit.target && grid.HasPath) {
+	void DoStep (HexUnit unit) {
+		if (unit.target && grid.HasPath) {
 
-			selectedUnit.Location.SetLabel(null);
-			selectedUnit.Location.DisableHighlight();
+			unit.Location.SetLabel(null);
+			unit.Location.DisableHighlight();
 
-			selectedUnit.TravelStep(grid.GetPath());
-			grid.currentPathFrom = selectedUnit.Location;
+			unit.TravelStep(grid.GetPath());
+			grid.currentPathFrom = unit.Location;
 
-			selectedUnit.Location.SetLabel(null);
-			selectedUnit.Location.EnableHighlight(Color.blue);
+			unit.Location.SetLabel(null);
+			unit.Location.EnableHighlight(Color.red);
 		}
 	}
 
-	void Attack () {
-		int h0 = selectedUnit.target.health;
-		int h1 = selectedUnit.target.TakeDamage(selectedUnit.attackDamage);
-		int d = selectedUnit.attackDamage;
+	public IEnumerator Attack (HexUnit unit) {
+		WaitForSeconds delay = new WaitForSeconds(1 / 4f);
+		unit.animator.SetTrigger("Attack");
+		yield return delay;
+		unit.target.animator.SetTrigger("Hurt");
+		int h0 = unit.target.health;
+		int h1 = unit.target.TakeDamage(unit.attackDamage);
+		int d = unit.attackDamage;
 		Debug.Log(h0 + " - " + d + " = " + h1 + " health remaining");
-		if (h1 <= 0) {
-			Debug.Log("Dead");
-		}
+
+
+
 	}
+
+	public void AnimateAttack (HexUnit unit) {
+		unit.animator.SetTrigger("Attack");
+	}
+
+
+
+
 
 }

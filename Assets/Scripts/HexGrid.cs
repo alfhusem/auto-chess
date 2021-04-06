@@ -201,13 +201,13 @@ public class HexGrid : MonoBehaviour
 		if (currentPathExists) {
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
-				int turn = current.Distance / speed;
-				current.SetLabel(turn.ToString());
+				//int turn = current.Distance / speed;
+				//current.SetLabel(turn.ToString());
 				current.EnableHighlight(Color.black);
 				current = current.PathFrom;
 			}
 		}
-		currentPathFrom.EnableHighlight(Color.blue);
+		currentPathFrom.EnableHighlight(Color.red);
 		currentPathTo.EnableHighlight(Color.red);
 	}
 
@@ -253,7 +253,7 @@ public class HexGrid : MonoBehaviour
 		hexMesh.Triangulate(cells);
 	}
 
-	public List<HexUnit> getUnits( int faction) {
+	public List<HexUnit> GetUnits( int faction ) {
 		List<HexUnit> result = new List<HexUnit>();
 		if (faction < 4 && faction > -1) {
 			foreach (HexUnit unit in units) {
@@ -263,7 +263,10 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 		return result;
+	}
 
+	public List<HexUnit> GetUnits() {
+		return units;
 	}
 
 
