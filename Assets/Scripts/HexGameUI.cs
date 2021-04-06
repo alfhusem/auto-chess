@@ -5,6 +5,7 @@ public class HexGameUI : MonoBehaviour {
 
 	public HexGrid grid;
 	public int fixedSpeed;
+	public int selectedFaction; //moved
 
 	HexCell currentCell;
 	HexUnit selectedUnit;
@@ -14,6 +15,11 @@ public class HexGameUI : MonoBehaviour {
 		enabled = !toggle;
 		//grid.ShowUI(!toggle);
 		grid.ClearPath();
+	}
+
+	public void SetFaction (int faction) {
+		enabled = faction == 0;
+		selectedFaction = faction;
 	}
 
 	void Awake () {
@@ -45,6 +51,9 @@ public class HexGameUI : MonoBehaviour {
 		}
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			DoTurn();
+			Debug.Log(grid.getUnits(0)[0]);
+			Debug.Log(grid.getUnits(1)[0]);
+
 		}
 	}
 
@@ -112,10 +121,18 @@ public class HexGameUI : MonoBehaviour {
 			Debug.Log("He dead");
 		}
 	}
+
 	void DoStep () {
 		if (selectedUnit.target && grid.HasPath) {
+
+			selectedUnit.Location.SetLabel(null);
+			selectedUnit.Location.DisableHighlight();
+
 			selectedUnit.TravelStep(grid.GetPath());
 			grid.currentPathFrom = selectedUnit.Location;
+
+			selectedUnit.Location.SetLabel(null);
+			selectedUnit.Location.EnableHighlight(Color.blue);
 		}
 	}
 

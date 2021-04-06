@@ -253,5 +253,18 @@ public class HexGrid : MonoBehaviour
 		hexMesh.Triangulate(cells);
 	}
 
+	public List<HexUnit> getUnits( int faction) {
+		List<HexUnit> result = new List<HexUnit>();
+		if (faction < 4 && faction > -1) {
+			foreach (HexUnit unit in units) {
+				if (unit.faction == faction) {
+					result.Add(unit);
+				}
+			}
+		}
+		return result;
+
+	}
+
 
 }

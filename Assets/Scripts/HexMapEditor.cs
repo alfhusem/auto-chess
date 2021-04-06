@@ -11,10 +11,13 @@ public class HexMapEditor : MonoBehaviour
 	public HexGrid hexGrid;
 	private Color activeColor;
 	private Color defaultColor;
-	public HexUnit unitPrefab;
+	public HexUnit prefabSwordsman;
+	public HexUnit prefabDemonWarrior;
+
+	public int selectedFaction;
 
 	HexCell previousCell;
-	bool enabled;
+	//bool enabled;
 
 	void Awake () {
 		SelectColor(0);
@@ -74,7 +77,12 @@ public class HexMapEditor : MonoBehaviour
 	void CreateUnit () {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
-			hexGrid.AddUnit( Instantiate(unitPrefab), cell );
+			if (selectedFaction == 0) {
+				hexGrid.AddUnit( Instantiate(prefabSwordsman), cell );
+			}
+			else if (selectedFaction == 1) {
+				hexGrid.AddUnit( Instantiate(prefabDemonWarrior), cell );
+			}
 		}
 	}
 
@@ -107,6 +115,11 @@ public class HexMapEditor : MonoBehaviour
 
 	public void SetEditMode (bool toggle) {
 		enabled = toggle;
+	}
+
+	public void SetFaction (int faction) {
+		//enabled = faction == 1;
+		selectedFaction = faction;
 	}
 
 	IEnumerator toggleObstacle (HexCell cell) {
