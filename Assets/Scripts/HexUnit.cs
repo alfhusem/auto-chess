@@ -10,6 +10,8 @@ public class HexUnit : MonoBehaviour
 
 	int offset = 3; // position in cell
 	bool isDead;
+	bool currentPathExists;
+	bool facingRight;
 
 	public HexUnit target { get; set; }
 
@@ -18,6 +20,7 @@ public class HexUnit : MonoBehaviour
 	public int health;
 	public int attackDamage;
 	public int attackRange;
+	public int speed;
 	public Animator animator;
 
   public HexCell Location {
@@ -41,6 +44,18 @@ public class HexUnit : MonoBehaviour
 		}
 	}
 
+	public bool HasPath {
+		get {
+			return currentPathExists;
+		}
+	}
+
+	public bool FacingRight {
+		get {
+			return facingRight;
+		}
+	}
+
 	public int TakeDamage (int damage) {
 		health -= damage;
 		if (health <= 0) {
@@ -57,6 +72,16 @@ public class HexUnit : MonoBehaviour
 
 	public void SetPath (List<HexCell> path) {
 		pathToTravel = path;
+		if(path != null) {
+			currentPathExists = true;
+		}
+		else {
+			currentPathExists = false;
+		}
+	}
+
+	public List<HexCell> GetPath () {
+		return pathToTravel;
 	}
 
 	public void TravelStep (List<HexCell> path) {
@@ -84,6 +109,17 @@ public class HexUnit : MonoBehaviour
 	public int DistanceToUnit(HexUnit targetUnit) {
 		return this.Location.coordinates.DistanceTo(targetUnit.Location.coordinates);
 	}
+
+
+	public void Flip()
+{
+   // Switch the way the player is labelled as facing
+   facingRight = !facingRight;
+   // Multiply the player's x local scale by -1
+   Vector3 theScale = transform.localScale;
+   theScale.x *= -1;
+   transform.localScale = theScale;
+}
 
 
 }

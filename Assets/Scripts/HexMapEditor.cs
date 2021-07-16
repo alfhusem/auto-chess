@@ -31,12 +31,17 @@ public class HexMapEditor : MonoBehaviour
 				HandleInput();
 				return;
 			}
-			if (Input.GetKeyDown(KeyCode.U)) {
+			if (Input.GetKeyDown(KeyCode.U) || Input.GetKeyDown(KeyCode.I)) {
 				if (Input.GetKey(KeyCode.LeftShift)) {
 					DestroyUnit();
 				}
 				else {
-					CreateUnit();
+					if(Input.GetKeyDown(KeyCode.U)) {
+						CreateUnit(0);
+					}
+					else if (Input.GetKeyDown(KeyCode.I)) {
+						CreateUnit(1);
+					}
 				}
 				return;
 			}
@@ -85,6 +90,19 @@ public class HexMapEditor : MonoBehaviour
 			}
 		}
 	}
+
+	void CreateUnit (int faction) {
+		HexCell cell = GetCellUnderCursor();
+		if (cell && !cell.Unit) {
+			if (faction == 0) {
+				hexGrid.AddUnit( Instantiate(prefabSwordsman), cell );
+			}
+			else if (faction == 1) {
+				hexGrid.AddUnit( Instantiate(prefabDemonWarrior), cell );
+			}
+		}
+	}
+
 
 	void DestroyUnit () {
 		HexCell cell = GetCellUnderCursor();

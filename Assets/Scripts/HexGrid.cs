@@ -115,7 +115,7 @@ public class HexGrid : MonoBehaviour
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		currentPathExists = Search(fromCell, toCell, speed);
-		ShowPath(speed);
+		//ShowPath(speed);
 
 	}
 
@@ -150,9 +150,15 @@ public class HexGrid : MonoBehaviour
 				) {
 						continue;
 				}
-				if ( neighbor.obstacle ){ //|| neighbor.Unit) {
+				if ( neighbor.obstacle) { //change to friendly u
 					// TODO more spesific
 					continue;
+				}
+
+				if ( neighbor.Unit) {
+					if ( neighbor.Unit.faction == fromCell.Unit.faction) {
+						continue;
+					}
 				}
 				int moveCost = 1;
 				//TODO different movecost per terrain
@@ -245,15 +251,17 @@ public class HexGrid : MonoBehaviour
 	}
 
 	public void RemoveUnit (HexUnit unit) {
-		units.Remove(unit);
-		unit.Die();
+		if (units.Contains(unit)) {
+			units.Remove(unit);
+			unit.Die();
+		}
 	}
 
 	public void Refresh () {
 		hexMesh.Triangulate(cells);
 	}
 
-	public List<HexUnit> GetUnits( int faction ) {
+	public List<HexUnit> GetUnits ( int faction ) {
 		List<HexUnit> result = new List<HexUnit>();
 		if (faction < 4 && faction > -1) {
 			foreach (HexUnit unit in units) {
@@ -267,6 +275,18 @@ public class HexGrid : MonoBehaviour
 
 	public List<HexUnit> GetUnits() {
 		return units;
+	}
+
+	public List<HexUnit> GetUnitsExcept ( int faction ) {
+		List<HexUnit> result = new List<HexUnit>();
+		if (faction < 4 && faction > -1) {
+			foreach (HexUnit unit in units) {
+				if (unit.faction != faction) {
+					result.Add(unit);
+				}
+			}
+		}
+		return result;
 	}
 
 

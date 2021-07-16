@@ -33,6 +33,11 @@ public struct HexCoordinates {
 		return new HexCoordinates(x - z / 2, z);
 	}
 
+	public static Vector3 ToVector3 (HexCoordinates coordinates) {
+		int scale = 1;
+		return new Vector3(coordinates.X*scale, coordinates.Z, coordinates.Y*scale);
+	}
+
 	public static HexCoordinates FromPosition (Vector3 position) {
 
 		float x = position.x / (HexMetrics.innerRadius * 2f);
