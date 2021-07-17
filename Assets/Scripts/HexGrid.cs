@@ -14,6 +14,7 @@ public class HexGrid : MonoBehaviour
 
     public HexCell cellPrefab;
 		public Text cellLabelPrefab;
+		public GameLogic gameLogic;
 
 		public HexCell currentPathFrom, currentPathTo;
 		bool currentPathExists;
@@ -245,16 +246,23 @@ public class HexGrid : MonoBehaviour
 	}
 
 	public void AddUnit (HexUnit unit, HexCell location) {
-		units.Add(unit);
-		unit.transform.SetParent(transform, false);
-		unit.Location = location;
+		//if(gameLogic.currentPlayer.balance >= unit.cost) {
+			units.Add(unit);
+			gameLogic.currentPlayer.balance -= unit.cost;
+			unit.transform.SetParent(transform, false);
+			unit.Location = location;
+		/*}
+		else {
+			RemoveUnit(unit);
+
+		}*/
 	}
 
 	public void RemoveUnit (HexUnit unit) {
 		if (units.Contains(unit)) {
 			units.Remove(unit);
-			unit.Die();
 		}
+		unit.Die();
 	}
 
 	public void Refresh () {

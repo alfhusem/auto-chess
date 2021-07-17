@@ -177,7 +177,7 @@ public class HexGameUI : MonoBehaviour {
 		WaitForSeconds delay = new WaitForSeconds(1/3f);
 		foreach (HexUnit unit in SortUnitsBySpeed(grid.GetUnits())) {
 			if (unit.target) {
-				if (unit.DistanceToUnit(unit.target) <= unit.attackRange && unit.target) {
+				if ((unit.DistanceToUnit(unit.target) <= unit.attackRange) && unit.target) {
 					StartCoroutine(Attack(unit));
 					//Attack(unit);
 					yield return delay;
@@ -194,9 +194,12 @@ public class HexGameUI : MonoBehaviour {
 
 	public IEnumerator Attack (HexUnit unit) {
 		WaitForSeconds delay = new WaitForSeconds(1 / 6f);
-		unit.animator.SetTrigger("Attack");
-		yield return delay;
-		unit.target.animator.SetTrigger("Hurt");
+		if (unit.animator){
+			unit.animator.SetTrigger("Attack");
+			yield return delay;
+			unit.target.animator.SetTrigger("Hurt");
+		}
+
 		int h0 = unit.target.health;
 		int h1 = unit.target.TakeDamage(unit.attackDamage);
 		int d = unit.attackDamage;

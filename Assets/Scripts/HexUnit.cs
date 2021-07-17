@@ -8,7 +8,6 @@ public class HexUnit : MonoBehaviour
 	HexCell location;
 	List<HexCell> pathToTravel;
 
-	int offset = 3; // position in cell
 	bool isDead;
 	bool currentPathExists;
 	bool facingRight;
@@ -21,6 +20,8 @@ public class HexUnit : MonoBehaviour
 	public int attackDamage;
 	public int attackRange;
 	public int speed;
+	public int cost;
+	public int offset; // position in cell (sprite)
 	public Animator animator;
 
   public HexCell Location {

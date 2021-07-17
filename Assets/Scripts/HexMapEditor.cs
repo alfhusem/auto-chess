@@ -11,8 +11,14 @@ public class HexMapEditor : MonoBehaviour
 	public HexGrid hexGrid;
 	private Color activeColor;
 	private Color defaultColor;
+
 	public HexUnit prefabSwordsman;
 	public HexUnit prefabDemonWarrior;
+	public HexUnit prefabRatSoldier;
+	public HexUnit prefabArcher;
+	public HexUnit prefabDemonBrute;
+
+	public GameLogic gameLogic;
 
 	public int selectedFaction;
 
@@ -31,7 +37,8 @@ public class HexMapEditor : MonoBehaviour
 				HandleInput();
 				return;
 			}
-			if (Input.GetKeyDown(KeyCode.U) || Input.GetKeyDown(KeyCode.I)) {
+			//Debug
+			if (UnitKeyPressed()) {
 				if (Input.GetKey(KeyCode.LeftShift)) {
 					DestroyUnit();
 				}
@@ -42,11 +49,55 @@ public class HexMapEditor : MonoBehaviour
 					else if (Input.GetKeyDown(KeyCode.I)) {
 						CreateUnit(1);
 					}
+					else if (Input.GetKeyDown(KeyCode.O)) {
+						CreateUnit(2);
+					}
+					else if (Input.GetKeyDown(KeyCode.P)) {
+						CreateUnit(3);
+					}
 				}
 				return;
 			}
+			//Turn based
+			switch (gameLogic.currentPlayer.faction)
+      {
+          case 0: //human
+							if(Input.GetKeyDown(KeyCode.Alpha1)) {
+								CreateUnit(0); //swordman
+							}
+							else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+								CreateUnit(3); //archer
+							}
+              break;
+
+          case 1: //demon
+							if(Input.GetKeyDown(KeyCode.Alpha1)) {
+								CreateUnit(1); //demonWarrior
+							}
+							else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+								CreateUnit(4); //demonBrute
+							}
+              break;
+
+          case 2: //rat
+							if(Input.GetKeyDown(KeyCode.Alpha1)) {
+								CreateUnit(2); //ratSoldier
+							}
+              break;
+      }
+
+
 		}
 		previousCell = null;
+
+	}
+
+	bool UnitKeyPressed() {
+		if (Input.GetKeyDown(KeyCode.U) || Input.GetKeyDown(KeyCode.I)
+		|| Input.GetKeyDown(KeyCode.O) || Input.GetKeyDown(KeyCode.P)) {
+			return true;
+		}
+		return false;
 
 	}
 
@@ -91,14 +142,23 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
-	void CreateUnit (int faction) {
+	void CreateUnit (int unit) {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
-			if (faction == 0) {
+			if (unit == 0) {
 				hexGrid.AddUnit( Instantiate(prefabSwordsman), cell );
 			}
-			else if (faction == 1) {
+			else if (unit == 1) {
 				hexGrid.AddUnit( Instantiate(prefabDemonWarrior), cell );
+			}
+			else if (unit == 2) {
+				hexGrid.AddUnit( Instantiate(prefabRatSoldier), cell );
+			}
+			else if (unit == 3) {
+				hexGrid.AddUnit( Instantiate(prefabArcher), cell );
+			}
+			else if (unit == 4) {
+				hexGrid.AddUnit( Instantiate(prefabDemonBrute), cell );
 			}
 		}
 	}
