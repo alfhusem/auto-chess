@@ -123,6 +123,7 @@ public class HexGameUI : MonoBehaviour {
 		TargetPhase();
 		MovePhase();
 		StartCoroutine(AttackPhase());
+		StartCoroutine(EffectPhase());
 		yield return delay;
 		turnStarted = false;
 
@@ -146,7 +147,6 @@ public class HexGameUI : MonoBehaviour {
 
 	void TargetPhase() {
 		int closestUnitDistance;
-		Debug.Log("units: " +ListToString(grid.GetUnits()));
 		foreach (HexUnit unit in grid.GetUnits()) {
 			closestUnitDistance = 10000;
 			if (grid.GetUnitsExcept(unit.faction).Count > 0) {
@@ -186,6 +186,23 @@ public class HexGameUI : MonoBehaviour {
 		}
 	}
 
+	IEnumerator EffectPhase() {
+		WaitForSeconds delay = new WaitForSeconds(1/6f);
+		foreach (HexUnit unit in grid.GetUnits()) {
+			if (unit.poisonDamage > 0) {
+				unit.TakePoisonDamage();
+				yield return delay;
+			}
+
+			if (unit.target.IsDead) {
+				unit.SetPath(null);
+				unit.target = null;
+				grid.RemoveUnit(unit.target);
+			}
+
+		}
+	}
+
 	void DoStep (HexUnit unit) {
 		if (unit.target && unit.HasPath) {
 			unit.TravelStep(unit.GetPath());
@@ -199,10 +216,15 @@ public class HexGameUI : MonoBehaviour {
 			yield return delay;
 			unit.target.animator.SetTrigger("Hurt");
 		}
+		unit.TryAttackRotate();
 
 		int h0 = unit.target.health;
 		int h1 = unit.target.TakeDamage(unit.attackDamage);
 		int d = unit.attackDamage;
+
+		if (unit.poison > 0) {
+			unit.target.GainPoison(unit.poison);
+		}
 
 		int offset = 0;
 		//Vector3 pos = new Vector3(unit.target.Location.Position.x, 0,unit.target.Location.Position.y);

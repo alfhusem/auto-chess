@@ -17,6 +17,7 @@ public class HexMapEditor : MonoBehaviour
 	public HexUnit prefabRatSoldier;
 	public HexUnit prefabArcher;
 	public HexUnit prefabDemonBrute;
+	public HexUnit prefabRatPoison;
 
 	public GameLogic gameLogic;
 
@@ -82,6 +83,9 @@ public class HexMapEditor : MonoBehaviour
           case 2: //rat
 							if(Input.GetKeyDown(KeyCode.Alpha1)) {
 								CreateUnit(2); //ratSoldier
+							}
+							else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+								CreateUnit(5); //ratPoison
 							}
               break;
       }
@@ -159,6 +163,9 @@ public class HexMapEditor : MonoBehaviour
 			}
 			else if (unit == 4) {
 				hexGrid.AddUnit( Instantiate(prefabDemonBrute), cell );
+			}
+			else if (unit == 5) {
+				hexGrid.AddUnit( Instantiate(prefabRatPoison), cell );
 			}
 		}
 	}

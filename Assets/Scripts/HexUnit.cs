@@ -22,7 +22,16 @@ public class HexUnit : MonoBehaviour
 	public int speed;
 	public int cost;
 	public int offset; // position in cell (sprite)
+	public int poison;
 	public Animator animator;
+	public bool hasAnimation;
+
+	public int poisonDamage {get; set;}
+
+
+	private SpriteRenderer myRenderer;
+  private Shader shaderGUItext;
+  private Shader shaderSpritesDefault;
 
   public HexCell Location {
 		get {
@@ -58,7 +67,9 @@ public class HexUnit : MonoBehaviour
 	}
 
 	public int TakeDamage (int damage) {
+		StartCoroutine(TakeDamageEffect());
 		health -= damage;
+
 		if (health <= 0) {
 			Die();
 		}
@@ -112,15 +123,86 @@ public class HexUnit : MonoBehaviour
 	}
 
 
-	public void Flip()
-{
+	public void Flip() {
    // Switch the way the player is labelled as facing
    facingRight = !facingRight;
    // Multiply the player's x local scale by -1
    Vector3 theScale = transform.localScale;
    theScale.x *= -1;
    transform.localScale = theScale;
-}
+	}
+
+	void Start () {
+				myRenderer = gameObject.GetComponent<SpriteRenderer>();
+				shaderGUItext = Shader.Find("GUI/Text Shader");
+				shaderSpritesDefault = Shader.Find("Sprites/Default"); // or whatever sprite shader is being used
+
+		}
+
+	void WhiteSprite() {
+     myRenderer.material.shader = shaderGUItext;
+     myRenderer.color = Color.white;
+ 	}
+
+	void GreenSprite() {
+     myRenderer.material.shader = shaderGUItext;
+     myRenderer.color = Color.green;
+ 	}
+
+	void NormalSprite() {
+     myRenderer.material.shader = shaderSpritesDefault;
+     myRenderer.color = Color.white;
+ 	}
+
+ 	IEnumerator TakeDamageEffect() {
+	 		WaitForSeconds delay = new WaitForSeconds(1 / 6f);
+			WhiteSprite();
+	 		yield return delay;
+			NormalSprite();
+ 	}
+
+	IEnumerator AttackRotate() {
+			WaitForSeconds delay = new WaitForSeconds(1 / 3f);
+			int degrees = 20;
+			if(facingRight) {
+				degrees *= -1;
+			}
+			transform.Rotate(Vector3.forward*degrees);
+			yield return delay;
+			transform.Rotate(Vector3.forward*-degrees);
+	}
+
+	public void TryAttackRotate() {
+		if (!this.hasAnimation) {
+			StartCoroutine(AttackRotate());
+		}
+	}
+
+	public void GainPoison(int poison) {
+		poisonDamage += poison;
+	}
+
+	public void TakePoisonDamage() {
+		StartCoroutine(TakePoisonDamageEffect());
+		health -= poisonDamage;
+		Debug.Log("PoisonDamage: -" + poisonDamage);
+		poisonDamage += 1;
+		if (health <= 0) {
+			Die();
+		}
+	}
+
+	IEnumerator TakePoisonDamageEffect() {
+	 		WaitForSeconds delay = new WaitForSeconds(1 / 6f);
+			GreenSprite();
+	 		yield return delay;
+			NormalSprite();
+ 	}
+
+
+
+
+
 
 
 }

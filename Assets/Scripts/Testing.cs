@@ -9,13 +9,21 @@ public class Testing : MonoBehaviour
     {
         //DamagePopup.Create(Vector3.zero, 300);
     }
-
-    /*void Update() {
+    /*
+    void Update() {
         if(Input.GetMouseButton(0)) {
             Vector3 mouse = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition)).Position;
             DamagePopup.Create(mouse, 300);
         }
-    }*/
+        if(Input.GetKeyDown(KeyCode.Alpha0)){
+            foreach (HexUnit unit in grid.GetUnits()) {
+                Vector3 pos = unit.transform.localPosition;
+                //Location //cell
+                DamagePopup.Create(pos, unit.health);
+            }
+        }
+    }
+    */
 
 
 }

@@ -8,11 +8,14 @@ public class GameLogic : MonoBehaviour
 
     public HexGameUI hexGameUI;
     public HexMapEditor hexMapEditor;
+    public HexGrid grid;
     List<Player> players = new List<Player>();
 
     public FactionLogo humanMask;
     public FactionLogo demonMask;
     public FactionLogo ratMask;
+
+    public PopUp popUp;
 
     int currentPlayerInt = 0;
     public Player currentPlayer {set; get;}
@@ -36,10 +39,12 @@ public class GameLogic : MonoBehaviour
             currentPlayer = players[0];
         }
 
-        toggleMask(currentPlayer.faction);
+        MovePopUp(grid.GetUnits()[grid.GetUnits().Count-1].Location);
+        //currentPlayer.faction)[0]
+        ToggleMask(currentPlayer.faction);
     }
 
-    void toggleMask(int faction) {
+    void ToggleMask(int faction) {
         if(currentPlayer.faction == faction) {
             humanMask.ToggleImage(faction == 0);
             demonMask.ToggleImage(faction == 1);
@@ -57,6 +62,11 @@ public class GameLogic : MonoBehaviour
 
     public void SetBalance(int b) {
         currentPlayer.balance = b;
+    }
+
+    public void MovePopUp(HexCell cell) {
+        popUp.Location = cell;
+
     }
 
 }
