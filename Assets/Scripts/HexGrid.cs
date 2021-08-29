@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class HexGrid : MonoBehaviour
 {
 		List<HexUnit> units = new List<HexUnit>();
+		List<HexProp> props = new List<HexProp>();
 
 		public int width = 12;
     public int height = 12;
@@ -19,7 +20,8 @@ public class HexGrid : MonoBehaviour
 		public HexCell currentPathFrom, currentPathTo;
 		bool currentPathExists;
 
-		Canvas gridCanvas;
+		public Canvas gridCanvas { get; set;}
+
     HexCell[] cells;
 		HexMesh hexMesh;
 		HexCellPriorityQueue searchFrontier;
@@ -156,6 +158,10 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 
+				if ( neighbor.Prop) {
+					continue;
+				}
+
 				if ( neighbor.Unit) {
 					if ( neighbor.Unit.faction == fromCell.Unit.faction) {
 						continue;
@@ -258,6 +264,14 @@ public class HexGrid : MonoBehaviour
 		}*/
 	}
 
+	public void AddProp (HexProp prop, HexCell location) {
+		//if(gameLogic.currentPlayer.balance >= unit.cost) {
+			props.Add(prop);
+			//gameLogic.currentPlayer.balance -= unit.cost;
+			prop.transform.SetParent(transform, false); //?
+			prop.Location = location;
+	}
+
 	public void RemoveUnit (HexUnit unit) {
 		if (units.Contains(unit)) {
 			units.Remove(unit);
@@ -295,6 +309,10 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 		return result;
+	}
+
+	public List<HexProp> GetProps() {
+		return props;
 	}
 
 

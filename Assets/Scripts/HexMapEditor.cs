@@ -4,6 +4,14 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+0: swordsman
+1: demon warrior
+2: rat soldier
+3: archer
+4: demon brute
+5: posion rat
+*/
 
 public class HexMapEditor : MonoBehaviour
 {
@@ -19,6 +27,8 @@ public class HexMapEditor : MonoBehaviour
 	public HexUnit prefabDemonBrute;
 	public HexUnit prefabRatPoison;
 
+	public HexProp prefabBarracks;
+
 	public GameLogic gameLogic;
 
 	public int selectedFaction;
@@ -30,6 +40,12 @@ public class HexMapEditor : MonoBehaviour
 		SelectColor(0);
 		defaultColor = Color.white;
 		SetEditMode(true);
+	}
+
+	void Start () {
+		//place barracks
+		Vector3 spawnBarracks = new Vector3(0,0);
+		CreateProp(0, hexGrid.GetCell(spawnBarracks));
 	}
 
 	void Update () {
@@ -54,7 +70,7 @@ public class HexMapEditor : MonoBehaviour
 						CreateUnit(2);
 					}
 					else if (Input.GetKeyDown(KeyCode.P)) {
-						CreateUnit(3);
+						CreateProp(0, GetCellUnderCursor());
 					}
 				}
 				return;
@@ -111,9 +127,13 @@ public class HexMapEditor : MonoBehaviour
 			//TODO editCells chunks
 			previousCell = currentCell;
 
+			/*
+
+			// Pretty much just makes a cell red and an obstacle
 			if (enabled) {
 				EditCell(currentCell); //TODO EditCells
 			}
+			*/
 
 		}
 		else {
@@ -134,20 +154,7 @@ public class HexMapEditor : MonoBehaviour
 	}
 
 
-	void CreateUnit () {
-		HexCell cell = GetCellUnderCursor();
-		if (cell && !cell.Unit) {
-			if (selectedFaction == 0) {
-				hexGrid.AddUnit( Instantiate(prefabSwordsman), cell );
-			}
-			else if (selectedFaction == 1) {
-				hexGrid.AddUnit( Instantiate(prefabDemonWarrior), cell );
-			}
-		}
-	}
-
-	void CreateUnit (int unit) {
-		HexCell cell = GetCellUnderCursor();
+	public void CreateUnit (int unit, HexCell cell) {
 		if (cell && !cell.Unit) {
 			if (unit == 0) {
 				hexGrid.AddUnit( Instantiate(prefabSwordsman), cell );
@@ -167,6 +174,25 @@ public class HexMapEditor : MonoBehaviour
 			else if (unit == 5) {
 				hexGrid.AddUnit( Instantiate(prefabRatPoison), cell );
 			}
+		}
+	}
+
+	void CreateUnit (int unit) {
+		HexCell cell = GetCellUnderCursor();
+		CreateUnit(unit, cell);
+	}
+
+
+	void CreateProp (int prop, HexCell cell) {
+		if (cell && !cell.Unit && !cell.Prop) {
+			if (prop == 0) {
+				hexGrid.AddProp( Instantiate(prefabBarracks), cell );
+				//CreateBarracksPopup();
+			}
+			else if (prop == 1) {
+				//TODO
+			}
+
 		}
 	}
 

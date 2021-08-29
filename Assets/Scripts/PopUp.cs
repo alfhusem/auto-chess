@@ -17,6 +17,7 @@ public class PopUp : MonoBehaviour
         }
     }
 
+	//try using different canvas
 	public HexCell Location {
 		  get {
 			  return location;

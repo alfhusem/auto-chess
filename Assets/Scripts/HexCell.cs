@@ -13,6 +13,7 @@ public class HexCell : MonoBehaviour {
 	public HexCell NextWithSamePriority { get; set; }
 	public int SearchPhase { get; set; }
 	public HexUnit Unit { get; set; }
+	public HexProp Prop { get; set; }
 
 
 	//TODO previousCell usage
@@ -55,6 +56,10 @@ public class HexCell : MonoBehaviour {
 
 	public HexCell GetNeighbor (HexDirection direction) {
 		return neighbors[(int)direction];
+	}
+
+	public HexCell GetNeighbor (int direction) {
+		return neighbors[direction];
 	}
 
 	public void SetNeighbor (HexDirection direction, HexCell cell) {
