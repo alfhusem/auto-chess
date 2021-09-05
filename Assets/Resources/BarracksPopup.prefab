@@ -77,7 +77,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: $10
+  m_Text: $15
 --- !u!1 &603508047634015532
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,6 +1094,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35a254b42ead741d6bcb652272217d95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  summonQueue: 
   unit1: {fileID: 5983383128044270899}
   unit2: {fileID: 246968245607748476}
   unit3: {fileID: 3821551850883581817}
@@ -1105,7 +1106,6 @@ MonoBehaviour:
   unit3text: {fileID: 0}
   close: {fileID: 4255008389468800910}
   grid: {fileID: 0}
-  mapEditor: {fileID: 0}
 --- !u!1 &4255008390860575276
 GameObject:
   m_ObjectHideFlags: 0
@@ -2296,4 +2296,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: $10
+  m_Text: $12

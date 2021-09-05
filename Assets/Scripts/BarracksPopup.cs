@@ -61,7 +61,7 @@ public class BarracksPopup : MonoBehaviour
         }
 
         for (int i = 0; i < queue.GetChild(0).childCount; i++) { //assumes all summon queues are same length
-            if (summonQueue.Count >= i) {
+            if (summonQueue.Count > i) {
                 if (summonQueue[i] == 0) {
                     int j = i + 1;
                     FindChild(

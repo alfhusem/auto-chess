@@ -11,7 +11,7 @@ public class FactionLogo : MonoBehaviour
     public GameLogic logic;
 
     void Awake() {
-
+    try{
         if(logic.currentPlayer.faction == 0) {
             isVisable = true;
             image.enabled = true;
@@ -20,7 +20,10 @@ public class FactionLogo : MonoBehaviour
             isVisable = false;
             image.enabled = false;
         }
-        
+    }
+    catch {
+    }
+
 
     }
 

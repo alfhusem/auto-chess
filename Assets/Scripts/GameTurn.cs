@@ -8,15 +8,19 @@ public class GameTurn : MonoBehaviour
 		public BarracksPopup barracksPopup;
 		public HexMapEditor mapEditor;
 
+		public List<HexUnit> toBeRemoved;
+
+		//List<HexCell> path = ListPool<HexCell>.Get();
+
 		int fixedSpeed = 2; // public? remove?
 		float turnLength = 2f;
 
 	//public bool turnStarted {get; set;}
-		bool turnStarted;
+		public bool turnStarted;
 		//summon position relative to barracks
 		int summonPos;
 
-    // Update is called once per frame
+
     void Update()
     {
 			if(!turnStarted) {
@@ -24,22 +28,28 @@ public class GameTurn : MonoBehaviour
 			}
     }
 
+
 		void Start() {
 			summonPos = 2;
+			toBeRemoved = new List<HexUnit>();
 		}
 
     public IEnumerator DoTurn () {
 
 			WaitForSeconds delay = new WaitForSeconds(turnLength);
+			WaitForSeconds intermission = new WaitForSeconds(turnLength/12);
 			turnStarted = true;
 
+			SummonPhase();
+			yield return intermission;
 			TargetPhase();
-			StartCoroutine(SummonPhase());
+			yield return intermission;
 			MovePhase();
+			yield return intermission;
 			StartCoroutine(AttackPhase());
 			//StartCoroutine(EffectPhase());
 			yield return delay;
-			turnStarted = false;
+
 
 			/*
 			foreach (HexUnit unit in grid.GetUnits()) {
@@ -78,20 +88,26 @@ public class GameTurn : MonoBehaviour
 
 		}
 
-		IEnumerator SummonPhase() {
-			WaitForSeconds delay = new WaitForSeconds(1/12f);
+		void SummonPhase() { //IEnumerator
+			//WaitForSeconds delay = new WaitForSeconds(1/12f);
 			HexCell cell = grid.GetProps()[0].Location;
-			Debug.Log("test");
 			if (barracksPopup.summonQueue.Count > 0) {
 				foreach (int unit in barracksPopup.summonQueue) {
-					Debug.Log("test2");
 					summonPos = summonPos > 4 ? 0 : summonPos + 1;
 			    mapEditor.CreateUnit(unit, cell.GetNeighbor(summonPos));
 					barracksPopup.summonQueue.RemoveAt(0);
 					barracksPopup.UpdateSummonQueue();
-	        Debug.Log(summonPos);
-					yield return delay;
+					//yield return delay;
+					//yield return null;
 				}
+			}
+			if (grid.unitSummonQueue.Count > 0) {
+				foreach (KeyValuePair<HexUnit, HexCell> item in grid.unitSummonQueue) {
+					grid.AddUnit(item.Key, item.Value);
+
+				}
+				grid.unitSummonQueue.Clear();
+
 			}
 		}
 
@@ -109,7 +125,9 @@ public class GameTurn : MonoBehaviour
 
 		IEnumerator AttackPhase() {
 			WaitForSeconds delay = new WaitForSeconds(1/3f);
-			foreach (HexUnit unit in SortUnitsBySpeed(grid.GetUnits())) {
+			//toBeRemoved.Clear();
+			List<HexUnit> list = SortUnitsBySpeed(grid.GetUnits());
+			foreach (HexUnit unit in list) {
 				if (unit.target) {
 					if ((unit.DistanceToUnit(unit.target) <= unit.attackRange) && unit.target) {
 						StartCoroutine(Attack(unit));
@@ -118,6 +136,19 @@ public class GameTurn : MonoBehaviour
 					}
 				}
 			}
+			if (toBeRemoved.Count > 0) {
+				foreach (HexUnit unit in toBeRemoved) {
+					grid.RemoveUnit(unit);
+					unit.SetPath(null);
+					unit.target = null;
+					unit.Die();
+				}
+			}
+
+			//toBeRemoved.Clear();
+
+			//All units are finished attacking
+			StartCoroutine(EndOfTurn());
 		}
 
 		IEnumerator EffectPhase() {
@@ -125,16 +156,27 @@ public class GameTurn : MonoBehaviour
 			foreach (HexUnit unit in grid.GetUnits()) {
 				if (unit.poisonDamage > 0) {
 					unit.TakePoisonDamage();
-					yield return delay;
+					//yield return delay;
+					yield return null;
 				}
-
-				if (unit.target.IsDead) {
-					unit.SetPath(null);
-					unit.target = null;
-					grid.RemoveUnit(unit.target);
+				if (unit.target) {
+					if (unit.target.IsDead) {
+						unit.SetPath(null);
+						unit.target = null;
+						grid.RemoveUnit(unit.target);
+					}
 				}
 
 			}
+		}
+
+		IEnumerator EndOfTurn() {
+			WaitForSeconds delay = new WaitForSeconds(1/6f);
+			//StartCoroutine(EffectPhase());
+
+			//yield return delay;
+			yield return null;
+			turnStarted = false;
 		}
 
 
@@ -147,15 +189,22 @@ public class GameTurn : MonoBehaviour
 			}
 			unit.TryAttackRotate();
 
-			int h0 = unit.target.health;
+			//int h0 = unit.target.health;
 			int h1 = unit.target.TakeDamage(unit.attackDamage);
-			int d = unit.attackDamage;
+			//int d = unit.attackDamage;
 
 			if (unit.poison > 0) {
 				unit.target.GainPoison(unit.poison);
 			}
 
 			int offset = 0;
+
+			//if (unit.target.IsDead) {
+			if (h1 <= 0) {
+				toBeRemoved.Add(unit.target);
+			}
+			yield return delay;
+
 			//Vector3 pos = new Vector3(unit.target.Location.Position.x, 0,unit.target.Location.Position.y);
 			//Vector3 pos = unit.target.Location.Position;
 			//Vector3 pos1 = HexCoordinates.ToVector3(HexCoordinates.FromPosition(
@@ -163,19 +212,6 @@ public class GameTurn : MonoBehaviour
 
 			//DamagePopup!!!!
 			//DamagePopup.Create(unit.target, d*-1);
-
-			//Debug.Log("target " + unit.target.Location.Position.ToString());
-			//Debug.Log("pos " + pos.ToString());
-			//Debug.Log("pos1 " + pos1.ToString());
-
-
-			//Debug.Log(h0 + " - " + d + " = " + h1 + " health remaining");
-			if (unit.target.IsDead) {
-				unit.SetPath(null);
-				unit.target = null;
-				grid.RemoveUnit(unit.target);
-			}
-			yield return delay;
 
 		}
 
@@ -212,4 +248,5 @@ public class GameTurn : MonoBehaviour
 				unit.Flip();
 			}
 		}
+
 }

@@ -30,6 +30,7 @@ public class HexMapEditor : MonoBehaviour
 	public HexProp prefabBarracks;
 
 	public GameLogic gameLogic;
+	public GameTurn turn;
 
 	public int selectedFaction;
 
@@ -49,6 +50,11 @@ public class HexMapEditor : MonoBehaviour
 	}
 
 	void Update () {
+		//Not real time
+		if (Input.GetKeyDown(KeyCode.Space)) {
+
+		}
+
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if (Input.GetMouseButton(0)) {
 				HandleInput();
@@ -105,8 +111,6 @@ public class HexMapEditor : MonoBehaviour
 							}
               break;
       }
-
-
 		}
 		previousCell = null;
 
@@ -153,27 +157,21 @@ public class HexMapEditor : MonoBehaviour
 			hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}
 
+	HexUnit UnitSwitch (int unit) {
+		switch(unit) {
+			case 0: return prefabSwordsman;
+			case 1: return prefabDemonWarrior;
+			case 2: return prefabRatSoldier;
+			case 3: return prefabArcher;
+			case 4: return prefabDemonBrute;
+			case 5: return prefabRatPoison;
+		}
+		return null;
+	}
 
 	public void CreateUnit (int unit, HexCell cell) {
 		if (cell && !cell.Unit) {
-			if (unit == 0) {
-				hexGrid.AddUnit( Instantiate(prefabSwordsman), cell );
-			}
-			else if (unit == 1) {
-				hexGrid.AddUnit( Instantiate(prefabDemonWarrior), cell );
-			}
-			else if (unit == 2) {
-				hexGrid.AddUnit( Instantiate(prefabRatSoldier), cell );
-			}
-			else if (unit == 3) {
-				hexGrid.AddUnit( Instantiate(prefabArcher), cell );
-			}
-			else if (unit == 4) {
-				hexGrid.AddUnit( Instantiate(prefabDemonBrute), cell );
-			}
-			else if (unit == 5) {
-				hexGrid.AddUnit( Instantiate(prefabRatPoison), cell );
-			}
+			hexGrid.AddToSummonQueue(Instantiate(UnitSwitch(unit)), cell);
 		}
 	}
 

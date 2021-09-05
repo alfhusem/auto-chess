@@ -9,6 +9,8 @@ public class HexGameUI : MonoBehaviour {
 	public GameTurn turn;
 	public GameObject prefabBarracksPopup;
 
+	List<HexUnit> toBeRemoved = new List<HexUnit>();
+
 	[SerializeField] private Transform dmgPrefab;
 
 	HexCell currentCell;
@@ -26,11 +28,18 @@ public class HexGameUI : MonoBehaviour {
 	}
 
 	void Update () {
+		/*
+		toBeRemoved.Clear();
+
 		foreach (HexUnit unit in grid.GetUnits()) {
 			if (unit.IsDead) {
-				grid.RemoveUnit(unit);
+				toBeRemoved.Add(unit);
 			}
 		}
+		foreach (HexUnit unit in toBeRemoved) {
+			grid.RemoveUnit(unit);
+		}
+		*/
 
 
 		if (!EventSystem.current.IsPointerOverGameObject()) {

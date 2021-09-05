@@ -39,7 +39,7 @@ public class GameLogic : MonoBehaviour
             currentPlayer = players[0];
         }
 
-        MovePopUp(grid.GetUnits()[grid.GetUnits().Count-1].Location);
+        //MovePopUp(grid.GetUnits()[grid.GetUnits().Count-1].Location);
         //currentPlayer.faction)[0]
         ToggleMask(currentPlayer.faction);
     }

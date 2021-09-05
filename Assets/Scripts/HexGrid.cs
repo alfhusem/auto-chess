@@ -7,6 +7,7 @@ public class HexGrid : MonoBehaviour
 {
 		List<HexUnit> units = new List<HexUnit>();
 		List<HexProp> props = new List<HexProp>();
+		public Dictionary<HexUnit, HexCell> unitSummonQueue = new Dictionary<HexUnit, HexCell>();
 
 		public int width = 12;
     public int height = 12;
@@ -313,6 +314,10 @@ public class HexGrid : MonoBehaviour
 
 	public List<HexProp> GetProps() {
 		return props;
+	}
+
+	public void AddToSummonQueue(HexUnit unit, HexCell cell) {
+		unitSummonQueue.Add(unit, cell);
 	}
 
 

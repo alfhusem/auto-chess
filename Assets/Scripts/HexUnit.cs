@@ -71,7 +71,7 @@ public class HexUnit : MonoBehaviour
 		health -= damage;
 
 		if (health <= 0) {
-			Die();
+			//Die();
 		}
 		return health;
 	}
