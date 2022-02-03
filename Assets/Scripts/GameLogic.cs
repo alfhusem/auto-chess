@@ -15,6 +15,8 @@ public class GameLogic : MonoBehaviour
     public FactionLogo demonMask;
     public FactionLogo ratMask;
 
+    public StatsPopup statsPopup;
+
     public PopUp popUp;
 
     int currentPlayerInt = 0;
@@ -42,6 +44,7 @@ public class GameLogic : MonoBehaviour
         //MovePopUp(grid.GetUnits()[grid.GetUnits().Count-1].Location);
         //currentPlayer.faction)[0]
         ToggleMask(currentPlayer.faction);
+
     }
 
     void ToggleMask(int faction) {

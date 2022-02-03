@@ -5,35 +5,37 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour
 {
-		List<HexUnit> units = new List<HexUnit>();
-		List<HexProp> props = new List<HexProp>();
-		public Dictionary<HexUnit, HexCell> unitSummonQueue = new Dictionary<HexUnit, HexCell>();
+	List<HexUnit> units = new List<HexUnit>();
+	List<HexProp> props = new List<HexProp>();
+	public Dictionary<HexUnit, HexCell> unitSummonQueue = new Dictionary<HexUnit, HexCell>();
 
-		public int width = 12;
-    public int height = 12;
-		public int scale = 9;
-		int searchFrontierPhase;
+	public int width = 12;
+	public int height = 12;
+	public int scale = 9;
+	int searchFrontierPhase;
 
-    public HexCell cellPrefab;
-		public Text cellLabelPrefab;
-		public GameLogic gameLogic;
+	public HexCell cellPrefab;
+	public Text cellLabelPrefab;
+	public GameLogic gameLogic;
 
-		public HexCell currentPathFrom, currentPathTo;
-		bool currentPathExists;
+	public HexCell currentPathFrom, currentPathTo;
+	bool currentPathExists;
 
-		public Canvas gridCanvas { get; set;}
+	public Canvas gridCanvas { get; set;}
 
     HexCell[] cells;
-		HexMesh hexMesh;
-		HexCellPriorityQueue searchFrontier;
+	HexMesh hexMesh;
+	HexCellPriorityQueue searchFrontier;
 
-		public Color defaultColor = Color.green;
+	public Color defaultColor = Color.green;
 
-		public bool HasPath {
-			get {
-				return currentPathExists;
-			}
+	public StatsPopup statsPopup;
+
+	public bool HasPath {
+		get {
+			return currentPathExists;
 		}
+	}
 
     void Awake()
     {
@@ -258,6 +260,8 @@ public class HexGrid : MonoBehaviour
 			gameLogic.currentPlayer.balance -= unit.cost;
 			unit.transform.SetParent(transform, false);
 			unit.Location = location;
+
+			statsPopup.AddUnit(unit);
 		/*}
 		else {
 			RemoveUnit(unit);
@@ -280,9 +284,10 @@ public class HexGrid : MonoBehaviour
 		unit.Die();
 	}
 
-	public void Refresh () {
+	//remove
+	/*public void Refresh () {
 		hexMesh.Triangulate(cells);
-	}
+	}*/
 
 	public List<HexUnit> GetUnits ( int faction ) {
 		List<HexUnit> result = new List<HexUnit>();
@@ -318,6 +323,7 @@ public class HexGrid : MonoBehaviour
 
 	public void AddToSummonQueue(HexUnit unit, HexCell cell) {
 		unitSummonQueue.Add(unit, cell);
+		// -> GameTurn -> this.AddUnit()
 	}
 
 

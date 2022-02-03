@@ -5,20 +5,22 @@ using UnityEngine;
 public class GameTurn : MonoBehaviour
 {
     public HexGrid grid;
-		public BarracksPopup barracksPopup;
-		public HexMapEditor mapEditor;
+	public BarracksPopup barracksPopup;
+	public StatsPopup statsPopup;
+	public HexMapEditor mapEditor;
+	public TurnCountUI turnCount;
 
-		public List<HexUnit> toBeRemoved;
+	public List<HexUnit> toBeRemoved;
 
-		//List<HexCell> path = ListPool<HexCell>.Get();
+	//List<HexCell> path = ListPool<HexCell>.Get();
 
-		int fixedSpeed = 2; // public? remove?
-		float turnLength = 2f;
+	int fixedSpeed = 2; // public? remove?
+	float turnLength = 2f;
 
 	//public bool turnStarted {get; set;}
-		public bool turnStarted;
-		//summon position relative to barracks
-		int summonPos;
+	public bool turnStarted;
+	//summon position relative to barracks
+	int summonPos;
 
 
     void Update()
@@ -39,6 +41,7 @@ public class GameTurn : MonoBehaviour
 			WaitForSeconds delay = new WaitForSeconds(turnLength);
 			WaitForSeconds intermission = new WaitForSeconds(turnLength/12);
 			turnStarted = true;
+			turnCount.IncrementTurnCount();
 
 			SummonPhase();
 			yield return intermission;
@@ -128,7 +131,7 @@ public class GameTurn : MonoBehaviour
 			//toBeRemoved.Clear();
 			List<HexUnit> list = SortUnitsBySpeed(grid.GetUnits());
 			foreach (HexUnit unit in list) {
-				if (unit.target) {
+				if (unit.target && unit.health > 0) {
 					if ((unit.DistanceToUnit(unit.target) <= unit.attackRange) && unit.target) {
 						StartCoroutine(Attack(unit));
 						//Attack(unit);
@@ -148,6 +151,7 @@ public class GameTurn : MonoBehaviour
 			//toBeRemoved.Clear();
 
 			//All units are finished attacking
+			statsPopup.UpdateHealth();
 			StartCoroutine(EndOfTurn());
 		}
 

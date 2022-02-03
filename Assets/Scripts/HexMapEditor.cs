@@ -214,7 +214,7 @@ public class HexMapEditor : MonoBehaviour
 			cell.color = Color.red;
 		}
 
-		hexGrid.Refresh();
+		//hexGrid.Refresh();
 	}
 
 	public void SelectColor (int index) {

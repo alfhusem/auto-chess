@@ -6,23 +6,20 @@ using TMPro;
 
 public class DamagePopup : MonoBehaviour
 {
-
+/*
     public static DamagePopup Create(Vector3 position, int damageAmount) {
-        Transform damagePopupTransform =
-         Instantiate(GameAssets.i.pfDamagePopup, position, Quaternion.identity);
+        Transform damagePopupTransform = null; //remove null
+         //Instantiate(GameAssets.i.pfDamagePopup, position, Quaternion.identity,
+         //GameObject.Find("/HexGrid/Canvas").transform);
         DamagePopup damagePopup = damagePopupTransform.GetComponent<DamagePopup>();
         damagePopup.Setup(damageAmount);
+        //damagePopupTransform.localScale = new Vector3(1f,1f);
 
         return damagePopup;
     }
 
     public static DamagePopup Create(HexUnit unit, int damageAmount) {
-        Transform damagePopupTransform =
-         Instantiate(GameAssets.i.pfDamagePopup, unit.Location.Position, Quaternion.identity);
-        DamagePopup damagePopup = damagePopupTransform.GetComponent<DamagePopup>();
-        damagePopup.Setup(damageAmount);
-
-        return damagePopup;
+        return Create(unit.Location.Position, damageAmount);
     }
 
     private static int sortingOrder;
@@ -72,4 +69,5 @@ public class DamagePopup : MonoBehaviour
             }
         }
     }
+*/
 }

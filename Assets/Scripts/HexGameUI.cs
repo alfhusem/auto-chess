@@ -84,16 +84,21 @@ public class HexGameUI : MonoBehaviour {
 	}
 
 	void DoSelection () {
-		grid.ClearPath();
+		//grid.ClearPath();
 		UpdateCurrentCell();
-		if (selectedUnit) {
-			if (selectedUnit.target) {
-				selectedUnit.target = null;
-			}
-		}
+		//if (selectedUnit) {
+		//	if (selectedUnit.target) {
+		//		selectedUnit.target = null;
+		//	}
+		//}
 		if (currentCell) {
 			//previouslySelectedUnit = selectedUnit;
 			//selectedUnit = currentCell.Unit;
+
+			// Select unit
+			if (currentCell.Unit) {
+				//currentCell.Unit.DisplayStats();
+			}
 
 			// Select barracks
 			if( currentCell.Prop) {

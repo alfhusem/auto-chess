@@ -13,9 +13,17 @@ public class HexUnit : MonoBehaviour
 	bool facingRight;
 
 	public HexUnit target { get; set; }
-
-	// 0:human, 1:demon, 2:rat, 3:wild
+	public int id;
+	/* IDs
+	0: Swordsman;
+	1: DemonWarrior;
+	2: RatSoldier;
+	3: Archer;
+	4: DemonBrute;
+	5: RatPoison;
+	*/
 	public int faction;
+	// 0:human, 1:demon, 2:rat, 3:wild
 	public int health;
 	public int attackDamage;
 	public int attackRange;
@@ -26,14 +34,23 @@ public class HexUnit : MonoBehaviour
 	public Animator animator;
 	public bool hasAnimation;
 
+	public Sprite unitModel {
+		get {
+			return gameObject.transform.GetComponent<SpriteRenderer>().sprite;
+		}
+	}
+
+	public Item item;
+
 	public int poisonDamage {get; set;}
 
+	public int fullHealth {get; set;}
 
 	private SpriteRenderer myRenderer;
-  private Shader shaderGUItext;
-  private Shader shaderSpritesDefault;
+	private Shader shaderGUItext;
+	private Shader shaderSpritesDefault;
 
-  public HexCell Location {
+  	public HexCell Location {
 		get {
 			return location;
 		}
@@ -65,6 +82,7 @@ public class HexUnit : MonoBehaviour
 			return facingRight;
 		}
 	}
+	
 
 	public int TakeDamage (int damage) {
 		StartCoroutine(TakeDamageEffect());
@@ -133,11 +151,14 @@ public class HexUnit : MonoBehaviour
 	}
 
 	void Start () {
-				myRenderer = gameObject.GetComponent<SpriteRenderer>();
-				shaderGUItext = Shader.Find("GUI/Text Shader");
-				shaderSpritesDefault = Shader.Find("Sprites/Default"); // or whatever sprite shader is being used
+		
+		fullHealth = health;
 
-		}
+		myRenderer = gameObject.GetComponent<SpriteRenderer>();
+		shaderGUItext = Shader.Find("GUI/Text Shader");
+		shaderSpritesDefault = Shader.Find("Sprites/Default"); // or whatever sprite shader is being used
+
+	}
 
 	void WhiteSprite() {
      myRenderer.material.shader = shaderGUItext;
