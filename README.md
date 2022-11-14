@@ -9,5 +9,6 @@ upgrading units: moving, targeting and attacking is controlled by the computer.
 *This screenshot shows two players fighting eachother. During the battle phase, the players can do nothing but watch.*
 
 <img width="722" alt="Screenshot 2022-10-23 at 21 15 48" src="https://user-images.githubusercontent.com/56074610/201714439-e0f7b551-f046-4247-a512-611f00c3dab5.png">
-*This screenshot shows the buying phase, where the player may buy units to be summoned for the next battle phase.*
-
+<p>
+This screenshot shows the buying phase, where the player may buy units to be summoned for the next battle phase.
+</p>
