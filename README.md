@@ -7,8 +7,9 @@ upgrading units: moving, targeting and attacking is controlled by the computer.
 
 <img width="719" alt="Screenshot 2022-10-23 at 21 14 19" src="https://user-images.githubusercontent.com/56074610/201714432-2e604444-49e2-4a3d-9c28-dbedc2d0cf81.png">
 <p>
-This screenshot shows two players fighting eachother. During the battle phase, the players can do nothing but watch.*
+This screenshot shows two players fighting eachother. During the battle phase, the players can do nothing but watch.
 </p>
+
 
 
 
